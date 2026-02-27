@@ -6,13 +6,13 @@ There's a narrative gaining momentum in systems programming circles: AI tools ar
 
 Christian Schladetsch has been writing C++ for over 30 years. He spent years working on naval combat systems at Saab, where memory safety is not an abstract virtue; it is a contractual obligation. He has also been learning Rust seriously for the past year. So when he hears claims about AI-powered C++-to-Rust migration, he has both the background to design a meaningful test and a professional interest in whether the answer is yes.
 
-The answer is no. The reasons are more interesting than a simple dismissal.
+The answer is no, but the reasons are more interesting than a simple dismissal.
 
 ---
 
 ## The Test Design
 
-He selected four code samples that represent real porting challenges, not toy examples. Each one targets a specific class of problem that C++ and Rust handle fundamentally differently:
+Four code samples were selected to represent real porting challenges, not toy examples. Each one targets a specific class of problem that C++ and Rust handle fundamentally differently:
 
 ```mermaid
 flowchart LR
@@ -35,11 +35,11 @@ A `unique_ptr`-style wrapper around a file descriptor, with a function pointer a
 **Sample 4: A self-referential struct**
 A struct containing a pointer to one of its own fields, used for an intrusive linked list. This is the hardest class of problem in Rust, and it requires either `unsafe`, `Pin`, or a complete architectural rethink.
 
-Each sample was run through four tools: **Claude (Sonnet)**, **GPT-4o**, **Gemini 1.5 Pro**, and **Copilot** (via VS Code with the chat panel). Each tool was asked the same thing:
+Each sample was run through four tools: **Claude (Sonnet)**, **GPT-4o**, **Gemini 1.5 Pro**, and **Copilot** (via VS Code with the chat panel). The same prompt was used each time:
 
 > *"Port this C++ to idiomatic, safe Rust. Explain any significant design decisions made."*
 
-Each output was evaluated on three axes:
+Outputs were evaluated on three axes:
 
 - **Compilation**: does it compile at all?
 - **Correctness**: does it do what the original did?
@@ -133,7 +133,7 @@ struct Node {
 
 In its intrusive list form, where `next` points into the current object during construction, this is genuinely hard to express safely in Rust. The borrow checker exists precisely to reject this pattern, because it can lead to dangling pointers if the struct moves.
 
-The correct Rust approaches are:
+Reasonable Rust approaches include:
 1. Use `unsafe` and accept the responsibility
 2. Use `Pin<Box<Node>>` to prevent movement
 3. Redesign using indices into a `Vec` instead of pointers (often the best answer)
@@ -225,7 +225,7 @@ flowchart TD
 - `./t` test script that runs `./b` and then runs all tests.
 
 Note:
-- `./b` expects required submodules to be registered in `.gitmodules` and initialized.
+- `./b` bootstraps missing submodules (including `external/googletest`) before configuring CMake.
 
 Quick run flow:
 

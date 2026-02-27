@@ -27,8 +27,8 @@ flowchart TD
 git submodule update --init --recursive
 ```
 
-Notes:
-- `./b` expects required submodules to be registered in `.gitmodules` and initialized.
+Note:
+- `./b` bootstraps missing submodules (including `external/googletest`) before configuring CMake.
 
 ## Build
 
@@ -60,7 +60,7 @@ sequenceDiagram
   D-->>U: output
 ```
 
-Notes:
+Note:
 - `ModelStore` default location is `~/.local/share/deepseek/models`.
 - `DEEPSEEK_MODEL_HOME=/tmp/...` in demo commands is only for restricted sandbox runs.
 
