@@ -38,7 +38,11 @@ target_link_libraries(demo_04_stream_parser_basic PRIVATE ModelStore::ModelStore
 add_executable(demo_05_stream_parser_chunked demos/demo_05_stream_parser_chunked.cpp)
 target_link_libraries(demo_05_stream_parser_chunked PRIVATE ModelStore::ModelStore)
 
-add_executable(cpp_to_rust_tests tests/cpp_to_rust_tests.cpp)
+add_executable(cpp_to_rust_tests
+  tests/cpp_to_rust_tests.cpp
+  src/CppToRustConverter.cpp
+)
+target_include_directories(cpp_to_rust_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(cpp_to_rust_tests PRIVATE ModelStore::ModelStore gtest_main)
 include(GoogleTest)
 gtest_discover_tests(cpp_to_rust_tests)
