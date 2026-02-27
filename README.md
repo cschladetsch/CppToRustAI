@@ -2,6 +2,12 @@
 
 Companion project for the article on AI-assisted C++ to Rust migration, including local inference support.
 
+## Demo
+
+[DemoRun](resources/demo1.gif)
+
+## Architecture
+
 ```mermaid
 flowchart TD
   A[CppToRust Root] --> B[external/CppLmmModelStore submodule]
