@@ -94,6 +94,64 @@ struct List {
 )";
   }
 
+  if (cpp.find("throw std::runtime_error") != std::string_view::npos &&
+      cpp.find("int divide") != std::string_view::npos) {
+    return R"(fn divide(a: i32, b: i32) -> Result<i32, String> {
+    if b == 0 {
+        return Err("division by zero".to_string());
+    }
+    Ok(a / b)
+}
+)";
+  }
+
+  if (cpp.find("std::unique_ptr<int>") != std::string_view::npos &&
+      cpp.find("std::make_unique<int>") != std::string_view::npos) {
+    return R"(fn make_value() -> Box<i32> {
+    Box::new(42)
+}
+)";
+  }
+
+  if (cpp.find("enum class Color") != std::string_view::npos &&
+      cpp.find("switch") != std::string_view::npos) {
+    return R"(enum Color {
+    Red,
+    Green,
+    Blue,
+}
+
+fn to_name(c: Color) -> &'static str {
+    match c {
+        Color::Red => "red",
+        Color::Green => "green",
+        Color::Blue => "blue",
+    }
+}
+)";
+  }
+
+  if (cpp.find("std::vector<int>") != std::string_view::npos &&
+      cpp.find("for (int v : values)") != std::string_view::npos) {
+    return R"(fn sum(values: &[i32]) -> i32 {
+    values.iter().copied().sum()
+}
+)";
+  }
+
+  if (cpp.find("std::move") != std::string_view::npos &&
+      cpp.find("std::string") != std::string_view::npos) {
+    return R"(fn take_name(name: String) -> usize {
+    name.len()
+}
+
+fn demo() -> usize {
+    let src = String::from("alice");
+    take_name(src)
+}
+)";
+  }
+
   return {};
 }
 
@@ -156,6 +214,54 @@ struct Node {
   ExpectContains(rust, "Option<usize>", "intrusive list");
 }
 
+void TestExceptionToResultConversion() {
+  constexpr std::string_view kCpp = R"(int divide(int a, int b) {
+  if (b == 0) throw std::runtime_error("division by zero");
+  return a / b;
+})";
+  const std::string rust = ConvertCppSnippetToRust(kCpp);
+  ExpectContains(rust, "Result<i32, String>", "exception->result");
+  ExpectContains(rust, "Err(", "exception->result");
+}
+
+void TestUniquePtrToBoxConversion() {
+  constexpr std::string_view kCpp = R"(std::unique_ptr<int> make_value() {
+  return std::make_unique<int>(42);
+})";
+  const std::string rust = ConvertCppSnippetToRust(kCpp);
+  ExpectContains(rust, "Box<i32>", "unique_ptr->box");
+  ExpectContains(rust, "Box::new(42)", "unique_ptr->box");
+}
+
+void TestEnumClassToRustEnumConversion() {
+  constexpr std::string_view kCpp = R"(enum class Color { Red, Green, Blue };
+const char* to_name(Color c) {
+  switch (c) { default: return "red"; }
+})";
+  const std::string rust = ConvertCppSnippetToRust(kCpp);
+  ExpectContains(rust, "enum Color", "enum class");
+  ExpectContains(rust, "match c", "enum class");
+}
+
+void TestVectorLoopToIteratorConversion() {
+  constexpr std::string_view kCpp = R"(int sum(const std::vector<int>& values) {
+  int total = 0;
+  for (int v : values) total += v;
+  return total;
+})";
+  const std::string rust = ConvertCppSnippetToRust(kCpp);
+  ExpectContains(rust, "values.iter().copied().sum()", "vector loop");
+  ExpectContains(rust, "&[i32]", "vector loop");
+}
+
+void TestMoveSemanticsToOwnershipConversion() {
+  constexpr std::string_view kCpp = R"(std::string src = "alice";
+auto n = consume(std::move(src));)";
+  const std::string rust = ConvertCppSnippetToRust(kCpp);
+  ExpectContains(rust, "fn take_name(name: String)", "move semantics");
+  ExpectContains(rust, "take_name(src)", "move semantics");
+}
+
 }  // namespace
 
 int main() {
@@ -165,7 +271,12 @@ int main() {
     TestRaiiConversion();
     TestPinnedSelfReferenceConversion();
     TestIndexBasedIntrusiveListConversion();
-    std::cout << "5/5 cpp-to-rust conversion tests passed\n";
+    TestExceptionToResultConversion();
+    TestUniquePtrToBoxConversion();
+    TestEnumClassToRustEnumConversion();
+    TestVectorLoopToIteratorConversion();
+    TestMoveSemanticsToOwnershipConversion();
+    std::cout << "10/10 cpp-to-rust conversion tests passed\n";
     return 0;
   } catch (const std::exception& ex) {
     std::cerr << "Test failure: " << ex.what() << '\n';
