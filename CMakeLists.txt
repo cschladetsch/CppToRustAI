@@ -19,6 +19,10 @@ add_subdirectory(external/CppLmmModelStore)
 
 enable_testing()
 
+set(INSTALL_GTEST OFF CACHE BOOL "Disable GoogleTest install" FORCE)
+set(BUILD_GMOCK OFF CACHE BOOL "Disable GoogleMock" FORCE)
+add_subdirectory(external/googletest)
+
 add_executable(demo_01_resolve_paths demos/demo_01_resolve_paths.cpp)
 target_link_libraries(demo_01_resolve_paths PRIVATE ModelStore::ModelStore)
 
@@ -35,5 +39,6 @@ add_executable(demo_05_stream_parser_chunked demos/demo_05_stream_parser_chunked
 target_link_libraries(demo_05_stream_parser_chunked PRIVATE ModelStore::ModelStore)
 
 add_executable(cpp_to_rust_tests tests/cpp_to_rust_tests.cpp)
-target_link_libraries(cpp_to_rust_tests PRIVATE ModelStore::ModelStore)
-add_test(NAME cpp_to_rust_tests COMMAND cpp_to_rust_tests)
+target_link_libraries(cpp_to_rust_tests PRIVATE ModelStore::ModelStore gtest_main)
+include(GoogleTest)
+gtest_discover_tests(cpp_to_rust_tests)

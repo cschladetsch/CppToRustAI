@@ -5,6 +5,7 @@ Companion project for the article on AI-assisted C++ to Rust migration.
 ```mermaid
 flowchart TD
   A[CppToRust Root] --> B[external/CppLmmModelStore submodule]
+  A --> B2[external/googletest submodule]
   A --> C[demos]
   A --> D[tests]
   E[./b or CMake configure] --> F[Build ModelStore library]
@@ -16,8 +17,9 @@ flowchart TD
 ## Included
 
 - `external/CppLmmModelStore` git submodule
+- `external/googletest` git submodule
 - 5 demos in `demos/`
-- 10 C++->Rust conversion tests in `tests/cpp_to_rust_tests.cpp`
+- 40 C++->Rust conversion tests in `tests/cpp_to_rust_tests.cpp` (GoogleTest)
 
 ## Setup
 
@@ -31,7 +33,7 @@ git submodule update --init --recursive
 ./b
 ```
 
-## Run Demos
+## Running Demos
 
 ```bash
 ./build/demo_01_resolve_paths deepseek-r1
@@ -59,7 +61,7 @@ Notes:
 - `ModelStore` default location is `~/.local/share/deepseek/models`.
 - `DEEPSEEK_MODEL_HOME=/tmp/...` in demo commands is only for restricted sandbox runs.
 
-## Run Tests
+## Running Tests
 
 ```bash
 ./t
