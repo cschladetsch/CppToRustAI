@@ -33,7 +33,7 @@ git submodule update --init --recursive
 ./b
 ```
 
-## Running Demos
+## Demo Execution
 
 ```bash
 ./build/demo_01_resolve_paths deepseek-r1
@@ -45,11 +45,11 @@ DEEPSEEK_MODEL_HOME=/tmp/deepseek_models_demo ./build/demo_03_model_exists deeps
 
 ```mermaid
 sequenceDiagram
-  participant U as User
+  participant U as Operator
   participant D as Demo Binary
   participant M as ModelStore
   participant FS as Filesystem
-  U->>D: run demo_02/demo_03
+  U->>D: execute demo_02/demo_03
   D->>M: EnsureModelDir/ModelExists
   M->>FS: create/check model path
   FS-->>M: status
@@ -61,7 +61,7 @@ Notes:
 - `ModelStore` default location is `~/.local/share/deepseek/models`.
 - `DEEPSEEK_MODEL_HOME=/tmp/...` in demo commands is only for restricted sandbox runs.
 
-## Running Tests
+## Test Execution
 
 ```bash
 ./t
