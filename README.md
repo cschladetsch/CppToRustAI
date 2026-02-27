@@ -29,6 +29,18 @@ git submodule update --init --recursive
 
 Note:
 - `./b` bootstraps missing submodules (including `external/googletest`) before configuring CMake.
+- `./b` downloads the model specified in `config/model_download.conf` into the ModelStore directory if it is missing.
+- `./b` builds `external/llama.cpp` to provide a local `llama-cli` binary when needed.
+
+## Local Inference
+
+The converter uses a local DeepSeek GGUF model via a llama.cpp CLI binary when available.
+
+Notes:
+- Set `LLAMA_CPP_CLI` to the path of a `llama-cli` or `main` binary.
+- The default search paths include `external/llama.cpp/build/bin/llama-cli`.
+- Place a `.gguf` model file inside the model directory resolved by `ModelStore` (e.g., `~/.local/share/deepseek/models/deepseek-r1`).
+- Set `CPPTORUST_USE_LLAMA=0` to force the deterministic fallback converter.
 
 ## Build
 

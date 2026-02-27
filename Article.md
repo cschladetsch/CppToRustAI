@@ -226,6 +226,9 @@ flowchart TD
 
 Note:
 - `./b` bootstraps missing submodules (including `external/googletest`) before configuring CMake.
+- The converter uses a local llama.cpp CLI binary when available and falls back to deterministic patterns otherwise.
+- `./b` downloads the model specified in `config/model_download.conf` into the ModelStore directory if it is missing.
+- `./b` builds `external/llama.cpp` to provide a local `llama-cli` binary when needed.
 
 Quick run flow:
 

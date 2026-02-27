@@ -1,7 +1,11 @@
 #include "CppToRustConverter.hpp"
 
+#include <cctype>
+#include <cstdio>
+#include <cstdlib>
 #include <filesystem>
 #include <optional>
+#include <sstream>
 #include <string>
 
 #include "ModelStore.hpp"
@@ -176,6 +180,105 @@ std::optional<std::filesystem::path> FindModelFile(
   return std::nullopt;
 }
 
+std::string ShellEscape(const std::string& input) {
+  std::string escaped = "'";
+  for (char c : input) {
+    if (c == '\'') {
+      escaped += "'\\''";
+    } else {
+      escaped += c;
+    }
+  }
+  escaped += "'";
+  return escaped;
+}
+
+std::string Trim(std::string value) {
+  const auto is_space = [](unsigned char ch) { return std::isspace(ch) != 0; };
+  while (!value.empty() && is_space(value.front())) {
+    value.erase(value.begin());
+  }
+  while (!value.empty() && is_space(value.back())) {
+    value.pop_back();
+  }
+  return value;
+}
+
+std::optional<std::string> ExtractCodeBlock(std::string_view text) {
+  const std::string_view fence = "```";
+  auto start = text.find(fence);
+  if (start == std::string_view::npos) {
+    return std::nullopt;
+  }
+  start = text.find('\n', start);
+  if (start == std::string_view::npos) {
+    return std::nullopt;
+  }
+  start += 1;
+  auto end = text.find(fence, start);
+  if (end == std::string_view::npos) {
+    return std::nullopt;
+  }
+  return std::string(text.substr(start, end - start));
+}
+
+std::optional<std::filesystem::path> ResolveLlamaCliPath() {
+  if (const char* env = std::getenv("LLAMA_CPP_CLI"); env && *env) {
+    return std::filesystem::path(env);
+  }
+  const std::filesystem::path candidates[] = {
+      "external/llama.cpp/build/bin/llama-cli",
+      "external/llama.cpp/build/bin/main",
+      "external/llama.cpp/main",
+  };
+  for (const auto& candidate : candidates) {
+    if (std::filesystem::exists(candidate)) {
+      return candidate;
+    }
+  }
+  return std::nullopt;
+}
+
+std::optional<std::string> RunLlamaCli(std::string_view cpp,
+                                       const std::string& model_file,
+                                       int max_tokens) {
+  auto cli_path = ResolveLlamaCliPath();
+  if (!cli_path) {
+    return std::nullopt;
+  }
+
+  std::ostringstream prompt;
+  prompt << "Convert the following C++ snippet to idiomatic Rust. "
+            "Return only Rust code, no explanations.\n\n"
+         << "C++:\n"
+         << cpp << "\n\nRust:\n";
+
+  std::ostringstream command;
+  command << ShellEscape(cli_path->string())
+          << " -m " << ShellEscape(model_file)
+          << " -n " << max_tokens
+          << " -p " << ShellEscape(prompt.str());
+
+  std::string output;
+  FILE* pipe = popen(command.str().c_str(), "r");
+  if (!pipe) {
+    return std::nullopt;
+  }
+  char buffer[4096];
+  while (fgets(buffer, sizeof(buffer), pipe)) {
+    output.append(buffer);
+  }
+  const int rc = pclose(pipe);
+  if (rc != 0) {
+    return std::nullopt;
+  }
+
+  if (auto block = ExtractCodeBlock(output)) {
+    return Trim(*block);
+  }
+  return Trim(output);
+}
+
 }  // namespace
 
 std::string ConvertCppSnippetToRust(std::string_view cpp,
@@ -197,8 +300,15 @@ std::string ConvertCppSnippetToRust(std::string_view cpp,
     return FallbackConvert(cpp);
   }
 
-  // TODO: Integrate llama.cpp inference using the model_file.
-  // For now, fall back to deterministic conversion until inference wiring is in place.
+  if (const char* disable = std::getenv("CPPTORUST_USE_LLAMA");
+      disable && std::string(disable) == "0") {
+    return FallbackConvert(cpp);
+  }
+
+  if (auto result = RunLlamaCli(cpp, model_file, options.max_tokens)) {
+    return *result;
+  }
+
   return FallbackConvert(cpp);
 }
 
