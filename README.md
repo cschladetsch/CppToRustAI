@@ -7,17 +7,17 @@ flowchart TD
   A[CppToRust Root] --> B[external/CppLmmModelStore submodule]
   A --> C[demos]
   A --> D[tests]
-  E[CMake configure] --> F[Build ModelStore library]
+  E[./b or CMake configure] --> F[Build ModelStore library]
   F --> G[Build 5 demos]
   F --> H[Build cpp_to_rust_tests]
-  H --> I[ctest]
+  H --> I[./t or ctest]
 ```
 
 ## Included
 
 - `external/CppLmmModelStore` git submodule
 - 5 demos in `demos/`
-- 5 C++->Rust conversion tests in `tests/cpp_to_rust_tests.cpp`
+- 10 C++->Rust conversion tests in `tests/cpp_to_rust_tests.cpp`
 
 ## Setup
 
@@ -28,8 +28,7 @@ git submodule update --init --recursive
 ## Build
 
 ```bash
-cmake -S . -B build
-cmake --build build -j
+./b
 ```
 
 ## Run Demos
@@ -63,5 +62,5 @@ Notes:
 ## Run Tests
 
 ```bash
-ctest --test-dir build --output-on-failure
+./t
 ```

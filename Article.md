@@ -207,7 +207,7 @@ This repository now includes executable artifacts that mirror the four migration
 flowchart TD
   A[Repo root] --> B[external/CppLmmModelStore]
   A --> C[demos x5]
-  A --> D[tests x5 cases]
+  A --> D[tests x10 cases]
   E[cmake --build] --> C
   E --> D
   D --> F[ctest]
@@ -216,15 +216,15 @@ flowchart TD
 - `external/CppLmmModelStore` added as a git submodule.
 - `CMakeLists.txt` at the repository root to build demos and tests.
 - `demos/` containing five runnable examples.
-- `tests/cpp_to_rust_tests.cpp` containing five conversion-focused tests.
+- `tests/cpp_to_rust_tests.cpp` containing ten conversion-focused tests.
+- `./b` build script to initialize submodules and build everything.
+- `./t` test script that runs `./b` and then runs all tests.
 
 Quick run flow:
 
 ```bash
-git submodule update --init --recursive
-cmake -S . -B build
-cmake --build build -j
-ctest --test-dir build --output-on-failure
+./b
+./t
 ```
 
 Model store path note:
