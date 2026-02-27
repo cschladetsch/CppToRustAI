@@ -2,9 +2,9 @@
 
 ---
 
-There's a narrative gaining momentum in systems programming circles: AI tools are good enough now that a team can point them at a C++ codebase and walk away with idiomatic, safe, production-ready Rust. Vendors imply it. Blog posts assert it. LinkedIn influencers are very confident about it.
+There's a narrative gaining momentum in systems programming circles: AI tools are good enough now that a team can point them at a C++ codebase and walk away with idiomatic, safe, production-ready Rust. Vendors imply it. Blog posts assert it. LinkedIn influencers are confident about it.
 
-Christian Schladetsch has been writing C++ for over 30 years. He spent years working on naval combat systems at Saab, where memory safety is not an abstract virtue; it is a contractual obligation. He has also been learning Rust seriously for the past year. So when he hears claims about AI-powered C++-to-Rust migration, he has both the background to design a meaningful test and a professional interest in whether the answer is yes.
+Christian Schladetsch has been writing C++ for over 30 years. He spent years working on naval combat systems at Saab, where memory safety is not an abstract virtue; it is a contractual obligation. He has also been learning Rust seriously for the past year. So when he hears claims about AI-powered C++-to-Rust migration, he has both the background to design a meaningful test and a professional interest in the answer.
 
 The answer is no, but the reasons are more interesting than a simple dismissal.
 
@@ -110,7 +110,7 @@ struct FileHandle {
 };
 ```
 
-The natural Rust translation is a struct implementing `Drop`. The function pointer becomes a stored `fn(i32)` or a boxed closure depending on requirements.
+The natural Rust translation is a struct implementing `Drop`. The function pointer becomes a stored `fn(i32)` or a boxed closure, depending on requirements.
 
 All four tools got the `Drop` impl right. The interesting divergence was in how they handled the function pointer. Claude stored it as `fn(i32)` and noted the distinction between `fn` (function pointer) and `Fn` (closure trait). GPT-4o also handled this correctly. Gemini stored it as `Box<dyn Fn(i32)>`, which heap allocates a closure for what was a plain function pointer and adds overhead that wasn't in the original. Copilot got it right.
 
@@ -187,7 +187,7 @@ If a team is planning a real C++-to-Rust migration and wants to use AI assistanc
 
 **Always ask twice.** First prompt: "port this." Second prompt: "is this idiomatic? what would a senior Rust engineer change?" The delta between those two answers is where the real value is.
 
-**Treat `unsafe` in AI output as a flag, not a solution.** When a tool reaches for `unsafe`, it usually means it found the hard case and gave up. That's valuable information because it points at the part of the codebase that needs a human with Rust expertise to redesign, not just translate.
+**Treat `unsafe` in AI output as a flag, not a solution.** When a tool reaches for `unsafe`, it usually means it found the hard case and gave up. That's valuable information because it points to the part of the codebase that needs a human with Rust expertise to redesign, not just translate.
 
 ---
 

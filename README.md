@@ -1,6 +1,6 @@
 # CppToRust
 
-Companion project for the article on AI-assisted C++ to Rust migration.
+Companion project for the article on AI-assisted C++ to Rust migration, including local inference support.
 
 ```mermaid
 flowchart TD
@@ -34,7 +34,7 @@ Note:
 
 ## Local Inference
 
-The converter uses a local DeepSeek GGUF model via a llama.cpp CLI binary when available.
+The converter uses a local GGUF model via a llama.cpp CLI binary when available; otherwise it falls back to deterministic conversions.
 
 Notes:
 - Set `LLAMA_CPP_CLI` to the path of a `llama-cli` or `main` binary.
