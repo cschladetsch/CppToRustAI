@@ -1,0 +1,19 @@
+Start testing: Feb 28 00:06 AEDT
+----------------------------------------------------------
+1/1 Testing: cpp_to_rust_tests
+1/1 Test: cpp_to_rust_tests
+Command: "/home/christian/local/repos/CppToRust/build/cpp_to_rust_tests"
+Directory: /home/christian/local/repos/CppToRust/build
+"cpp_to_rust_tests" start time: Feb 28 00:06 AEDT
+Output:
+----------------------------------------------------------
+10/10 cpp-to-rust conversion tests passed
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"cpp_to_rust_tests" end time: Feb 28 00:06 AEDT
+"cpp_to_rust_tests" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Feb 28 00:06 AEDT
