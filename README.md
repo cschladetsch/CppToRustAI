@@ -4,7 +4,7 @@ Companion project for the article on AI-assisted C++ to Rust migration, includin
 
 ## Demo
 
-(DemoRun)[resources/Demo1.gif]
+[DemoRun](resources/Demo1.gif)
 
 ## Architecture
 
