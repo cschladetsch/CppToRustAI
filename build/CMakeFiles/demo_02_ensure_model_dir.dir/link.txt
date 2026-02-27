@@ -1,1 +1,0 @@
-/usr/bin/c++ CMakeFiles/demo_02_ensure_model_dir.dir/demos/demo_02_ensure_model_dir.cpp.o -o demo_02_ensure_model_dir  external/CppLmmModelStore/libModelStore.a 

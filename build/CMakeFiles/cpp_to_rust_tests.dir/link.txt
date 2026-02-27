@@ -1,1 +1,0 @@
-/usr/bin/c++ CMakeFiles/cpp_to_rust_tests.dir/tests/cpp_to_rust_tests.cpp.o -o cpp_to_rust_tests  external/CppLmmModelStore/libModelStore.a 

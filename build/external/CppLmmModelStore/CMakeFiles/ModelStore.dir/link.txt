@@ -1,2 +1,0 @@
-/usr/bin/ar qc libModelStore.a CMakeFiles/ModelStore.dir/src/ModelStore.cpp.o CMakeFiles/ModelStore.dir/src/DeepSeekStreamParser.cpp.o
-/usr/bin/ranlib libModelStore.a
