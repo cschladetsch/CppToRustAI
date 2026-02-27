@@ -27,6 +27,9 @@ flowchart TD
 git submodule update --init --recursive
 ```
 
+Notes:
+- `./b` expects required submodules to be registered in `.gitmodules` and initialized.
+
 ## Build
 
 ```bash
